@@ -28,6 +28,8 @@ if ($Host.Name -eq 'ConsoleHost' -and (Get-Module PSReadLine -ListAvailable)) {
     Set-PSReadLineKeyHandler -Key UpArrow   -Function HistorySearchBackward
     Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
     Set-PSReadLineKeyHandler -Key Tab       -Function MenuComplete
+    # Ctrl+F accepts the grey history suggestion (Right arrow still works too)
+    Set-PSReadLineKeyHandler -Chord Ctrl+f -Function $(if ($rl -ge [version]'2.2') { 'AcceptSuggestion' } else { 'ForwardChar' })
     Remove-Variable e, rl, colors
 }
 
@@ -43,14 +45,14 @@ if (Get-Command eza -CommandType Application -ErrorAction SilentlyContinue) {
 # --- Prompt ---
 function prompt {
     $ok = $?
-    if ($Linuxify.PromptStyle -ne $Linuxify.Config.style) {
+    if ($Linuxify.PromptStyle -ne $Linuxify.Config.prompt) {
         # PSReadLine redraws the last characters of the prompt in red on a syntax error
-        $Linuxify.PromptStyle = $Linuxify.Config.style
+        $Linuxify.PromptStyle = $Linuxify.Config.prompt
         if (Get-Command Set-PSReadLineOption -ErrorAction SilentlyContinue) {
-            Set-PSReadLineOption -PromptText $(if ($Linuxify.PromptStyle -eq 'arrow') { ' ' } else { '$ ' })
+            Set-PSReadLineOption -PromptText (Get-LxPromptText $Linuxify.PromptStyle)
         }
     }
-    Get-LxPrompt $Linuxify.Config.style $ok
+    Get-LxPrompt $Linuxify.Config.prompt $ok
 }
 
 # --- Commands ---
@@ -59,6 +61,14 @@ function linuxify {
     $Linuxify.Config = Read-LxConfig
 }
 function theme { linuxify theme @args }
+
+# fastfetch uses your chosen logo unless you pass one yourself
+if (Get-Command fastfetch -CommandType Application -ErrorAction SilentlyContinue) {
+    function fastfetch {
+        $logo = if ($args -match '^(-l|--logo|--file|--raw|--data)$') { @() } else { Get-LxFetchArgs $Linuxify.Config }
+        & (Get-Command fastfetch -CommandType Application | Select-Object -First 1) @logo @args
+    }
+}
 
 # --- Startup: theme colors + fastfetch (interactive terminals only) ---
 $lxArgs = [Environment]::GetCommandLineArgs()
@@ -70,7 +80,7 @@ if ($Host.Name -eq 'ConsoleHost' -and -not [Console]::IsOutputRedirected -and -n
     if ($Linuxify.Config.fetch -eq 'on' -and -not $env:LINUXIFY_FETCHED -and $env:TERM_PROGRAM -ne 'vscode' -and
         (Get-Command fastfetch -CommandType Application -ErrorAction SilentlyContinue)) {
         $env:LINUXIFY_FETCHED = '1'
-        if ($Linuxify.Config.logo) { fastfetch --logo $Linuxify.Config.logo } else { fastfetch }
+        fastfetch
     }
 }
 Remove-Variable lxArgs, lxScripted

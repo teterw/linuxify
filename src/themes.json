@@ -1,120 +1,148 @@
 {
-  "themes": [
-    {
-      "name": "linuxify",
-      "title": "Linuxify",
-      "desc": "Keeps your terminal's own colors, user@host:~/path $ prompt with git branch",
-      "style": "linuxify",
-      "logo": "",
-      "palette": null
-    },
-    {
-      "name": "ubuntu",
-      "title": "Ubuntu",
-      "desc": "Aubergine background and Yaru colors, classic bash prompt",
-      "style": "debian",
-      "logo": "ubuntu",
-      "palette": {
-        "bg": "#300A24", "fg": "#FFFFFF",
+  "colors": [
+    { "name": "default", "title": "Terminal default", "desc": "Keeps your terminal's own colors", "palette": null },
+
+    { "name": "ubuntu", "title": "Ubuntu", "desc": "Aubergine background, Yaru colors",
+      "palette": { "bg": "#300A24", "fg": "#FFFFFF",
         "colors": ["#171421", "#C01C28", "#26A269", "#A2734C", "#12488B", "#A347BA", "#2AA1B3", "#D0CFCC",
-                   "#5E5C64", "#F66151", "#33DA7A", "#E9AD0C", "#2A7BDE", "#C061CB", "#33C7DE", "#FFFFFF"]
-      }
-    },
-    {
-      "name": "fedora",
-      "title": "Fedora",
-      "desc": "GNOME dark terminal colors, [user@host dir]$ prompt",
-      "style": "bracket",
-      "logo": "fedora",
-      "palette": {
-        "bg": "#1E1E1E", "fg": "#FFFFFF",
+                   "#5E5C64", "#F66151", "#33DA7A", "#E9AD0C", "#2A7BDE", "#C061CB", "#33C7DE", "#FFFFFF"] } },
+    { "name": "fedora", "title": "Fedora", "desc": "GNOME dark terminal",
+      "palette": { "bg": "#1E1E1E", "fg": "#FFFFFF",
         "colors": ["#241F31", "#C01C28", "#2EC27E", "#F5C211", "#1E78E4", "#9841BB", "#0AB9DC", "#C0BFBC",
-                   "#5E5C64", "#ED333B", "#57E389", "#F8E45C", "#51A1FF", "#C061CB", "#4FD2FD", "#F6F5F4"]
-      }
-    },
-    {
-      "name": "kali",
-      "title": "Kali",
-      "desc": "Dark blue-grey background, two-line zsh prompt",
-      "style": "kali",
-      "logo": "kali",
-      "palette": {
-        "bg": "#1F2229", "fg": "#EDEDED",
+                   "#5E5C64", "#ED333B", "#57E389", "#F8E45C", "#51A1FF", "#C061CB", "#4FD2FD", "#F6F5F4"] } },
+    { "name": "kali", "title": "Kali", "desc": "Dark blue-grey, vivid accents",
+      "palette": { "bg": "#1F2229", "fg": "#EDEDED",
         "colors": ["#1F2229", "#E0115F", "#23D18B", "#E5C07B", "#277FFF", "#B048FF", "#15C6D9", "#D0D0D0",
-                   "#5C6370", "#FF4F7B", "#47F0AC", "#FFD866", "#5FA7FF", "#D08CFF", "#56E3F0", "#FFFFFF"]
-      }
-    },
-    {
-      "name": "arch",
-      "title": "Arch",
-      "desc": "Near-black background with Arch blue, [user@host dir]$ prompt",
-      "style": "bracket",
-      "logo": "arch",
-      "palette": {
-        "bg": "#121212", "fg": "#D8D8D8",
+                   "#5C6370", "#FF4F7B", "#47F0AC", "#FFD866", "#5FA7FF", "#D08CFF", "#56E3F0", "#FFFFFF"] } },
+    { "name": "arch", "title": "Arch", "desc": "Near-black with Arch blue",
+      "palette": { "bg": "#121212", "fg": "#D8D8D8",
         "colors": ["#1C1C1C", "#D54E53", "#9DC45F", "#E7C547", "#1793D1", "#B77EE0", "#54CED6", "#D8D8D8",
-                   "#555555", "#FF6B6B", "#B9E07A", "#FFE171", "#4FB8F0", "#D2A6FF", "#7FE6ED", "#FFFFFF"]
-      }
-    },
-    {
-      "name": "dracula",
-      "title": "Dracula",
-      "desc": "Purple-grey dark theme, oh-my-zsh arrow prompt",
-      "style": "arrow",
-      "logo": "",
-      "palette": {
-        "bg": "#282A36", "fg": "#F8F8F2",
+                   "#555555", "#FF6B6B", "#B9E07A", "#FFE171", "#4FB8F0", "#D2A6FF", "#7FE6ED", "#FFFFFF"] } },
+
+    { "name": "dracula", "title": "Dracula", "desc": "Purple-grey with neon pastels",
+      "palette": { "bg": "#282A36", "fg": "#F8F8F2",
         "colors": ["#21222C", "#FF5555", "#50FA7B", "#F1FA8C", "#BD93F9", "#FF79C6", "#8BE9FD", "#F8F8F2",
-                   "#6272A4", "#FF6E6E", "#69FF94", "#FFFFA5", "#D6ACFF", "#FF92DF", "#A4FFFF", "#FFFFFF"]
-      }
-    },
-    {
-      "name": "nord",
-      "title": "Nord",
-      "desc": "Cool arctic blues",
-      "style": "linuxify",
-      "logo": "",
-      "palette": {
-        "bg": "#2E3440", "fg": "#D8DEE9",
+                   "#6272A4", "#FF6E6E", "#69FF94", "#FFFFA5", "#D6ACFF", "#FF92DF", "#A4FFFF", "#FFFFFF"] } },
+    { "name": "nord", "title": "Nord", "desc": "Cool arctic blues",
+      "palette": { "bg": "#2E3440", "fg": "#D8DEE9",
         "colors": ["#3B4252", "#BF616A", "#A3BE8C", "#EBCB8B", "#81A1C1", "#B48EAD", "#88C0D0", "#E5E9F0",
-                   "#4C566A", "#BF616A", "#A3BE8C", "#EBCB8B", "#81A1C1", "#B48EAD", "#8FBCBB", "#ECEFF4"]
-      }
-    },
-    {
-      "name": "gruvbox",
-      "title": "Gruvbox",
-      "desc": "Warm retro colors, oh-my-zsh arrow prompt",
-      "style": "arrow",
-      "logo": "",
-      "palette": {
-        "bg": "#282828", "fg": "#EBDBB2",
+                   "#4C566A", "#BF616A", "#A3BE8C", "#EBCB8B", "#81A1C1", "#B48EAD", "#8FBCBB", "#ECEFF4"] } },
+    { "name": "gruvbox", "title": "Gruvbox", "desc": "Warm retro browns and yellows",
+      "palette": { "bg": "#282828", "fg": "#EBDBB2",
         "colors": ["#282828", "#CC241D", "#98971A", "#D79921", "#458588", "#B16286", "#689D6A", "#A89984",
-                   "#928374", "#FB4934", "#B8BB26", "#FABD2F", "#83A598", "#D3869B", "#8EC07C", "#EBDBB2"]
-      }
-    },
-    {
-      "name": "catppuccin",
-      "title": "Catppuccin Mocha",
-      "desc": "Soft pastel dark theme",
-      "style": "linuxify",
-      "logo": "",
-      "palette": {
-        "bg": "#1E1E2E", "fg": "#CDD6F4",
+                   "#928374", "#FB4934", "#B8BB26", "#FABD2F", "#83A598", "#D3869B", "#8EC07C", "#EBDBB2"] } },
+    { "name": "catppuccin", "title": "Catppuccin Mocha", "desc": "Soft pastels on dark",
+      "palette": { "bg": "#1E1E2E", "fg": "#CDD6F4",
         "colors": ["#45475A", "#F38BA8", "#A6E3A1", "#F9E2AF", "#89B4FA", "#F5C2E7", "#94E2D5", "#BAC2DE",
-                   "#585B70", "#F38BA8", "#A6E3A1", "#F9E2AF", "#89B4FA", "#F5C2E7", "#94E2D5", "#A6ADC8"]
-      }
-    },
-    {
-      "name": "tokyonight",
-      "title": "Tokyo Night",
-      "desc": "Deep blue night theme, oh-my-zsh arrow prompt",
-      "style": "arrow",
-      "logo": "",
-      "palette": {
-        "bg": "#1A1B26", "fg": "#C0CAF5",
+                   "#585B70", "#F38BA8", "#A6E3A1", "#F9E2AF", "#89B4FA", "#F5C2E7", "#94E2D5", "#A6ADC8"] } },
+    { "name": "tokyonight", "title": "Tokyo Night", "desc": "Deep night blue",
+      "palette": { "bg": "#1A1B26", "fg": "#C0CAF5",
         "colors": ["#15161E", "#F7768E", "#9ECE6A", "#E0AF68", "#7AA2F7", "#BB9AF7", "#7DCFFF", "#A9B1D6",
-                   "#414868", "#F7768E", "#9ECE6A", "#E0AF68", "#7AA2F7", "#BB9AF7", "#7DCFFF", "#C0CAF5"]
-      }
-    }
+                   "#414868", "#F7768E", "#9ECE6A", "#E0AF68", "#7AA2F7", "#BB9AF7", "#7DCFFF", "#C0CAF5"] } },
+    { "name": "onedark", "title": "One Dark", "desc": "Atom's classic dark theme",
+      "palette": { "bg": "#282C34", "fg": "#ABB2BF",
+        "colors": ["#282C34", "#E06C75", "#98C379", "#E5C07B", "#61AFEF", "#C678DD", "#56B6C2", "#ABB2BF",
+                   "#5C6370", "#E06C75", "#98C379", "#E5C07B", "#61AFEF", "#C678DD", "#56B6C2", "#FFFFFF"] } },
+    { "name": "monokai", "title": "Monokai", "desc": "Hot pink and lime on olive-black",
+      "palette": { "bg": "#272822", "fg": "#F8F8F2",
+        "colors": ["#272822", "#F92672", "#A6E22E", "#F4BF75", "#66D9EF", "#AE81FF", "#A1EFE4", "#F8F8F2",
+                   "#75715E", "#F92672", "#A6E22E", "#F4BF75", "#66D9EF", "#AE81FF", "#A1EFE4", "#F9F8F5"] } },
+    { "name": "solarized", "title": "Solarized Dark", "desc": "Low-contrast teal classic",
+      "palette": { "bg": "#002B36", "fg": "#93A1A1",
+        "colors": ["#073642", "#DC322F", "#859900", "#B58900", "#268BD2", "#D33682", "#2AA198", "#EEE8D5",
+                   "#586E75", "#CB4B16", "#9CB300", "#D0A000", "#4AA3E0", "#6C71C4", "#3DC0B4", "#FDF6E3"] } },
+    { "name": "rosepine", "title": "Rose Pine", "desc": "Muted roses on deep purple",
+      "palette": { "bg": "#191724", "fg": "#E0DEF4",
+        "colors": ["#26233A", "#EB6F92", "#31748F", "#F6C177", "#9CCFD8", "#C4A7E7", "#EBBCBA", "#E0DEF4",
+                   "#6E6A86", "#EB6F92", "#3E8FB0", "#F6C177", "#9CCFD8", "#C4A7E7", "#EBBCBA", "#E0DEF4"] } },
+    { "name": "everforest", "title": "Everforest", "desc": "Calm forest greens",
+      "palette": { "bg": "#2D353B", "fg": "#D3C6AA",
+        "colors": ["#475258", "#E67E80", "#A7C080", "#DBBC7F", "#7FBBB3", "#D699B6", "#83C092", "#D3C6AA",
+                   "#859289", "#E67E80", "#A7C080", "#DBBC7F", "#7FBBB3", "#D699B6", "#83C092", "#E6DCC4"] } },
+    { "name": "kanagawa", "title": "Kanagawa", "desc": "Ink-painting blues and golds",
+      "palette": { "bg": "#1F1F28", "fg": "#DCD7BA",
+        "colors": ["#16161D", "#C34043", "#76946A", "#C0A36E", "#7E9CD8", "#957FB8", "#6A9589", "#C8C093",
+                   "#727169", "#E82424", "#98BB6C", "#E6C384", "#7FB4CA", "#938AA9", "#7AA89F", "#DCD7BA"] } },
+    { "name": "github", "title": "GitHub Dark", "desc": "GitHub's dark mode",
+      "palette": { "bg": "#0D1117", "fg": "#C9D1D9",
+        "colors": ["#484F58", "#FF7B72", "#3FB950", "#D29922", "#58A6FF", "#BC8CFF", "#39C5CF", "#B1BAC4",
+                   "#6E7681", "#FFA198", "#56D364", "#E3B341", "#79C0FF", "#D2A8FF", "#56D4DD", "#F0F6FC"] } },
+    { "name": "nightowl", "title": "Night Owl", "desc": "Midnight navy for late coding",
+      "palette": { "bg": "#011627", "fg": "#D6DEEB",
+        "colors": ["#011627", "#EF5350", "#22DA6E", "#ADDB67", "#82AAFF", "#C792EA", "#21C7A8", "#D6DEEB",
+                   "#575656", "#EF5350", "#22DA6E", "#FFEB95", "#82AAFF", "#C792EA", "#7FDBCA", "#FFFFFF"] } },
+    { "name": "ayu", "title": "Ayu Dark", "desc": "Near-black with warm orange",
+      "palette": { "bg": "#0B0E14", "fg": "#BFBDB6",
+        "colors": ["#1E232B", "#EA6C73", "#7FD962", "#F9AF4F", "#53BDFA", "#CDA1FA", "#90E1C6", "#C7C7C7",
+                   "#686868", "#F07178", "#AAD94C", "#FFB454", "#59C2FF", "#D2A6FF", "#95E6CB", "#FFFFFF"] } },
+    { "name": "cobalt2", "title": "Cobalt2", "desc": "Bright yellow on cobalt blue",
+      "palette": { "bg": "#193549", "fg": "#FFFFFF",
+        "colors": ["#000000", "#FF0000", "#38DE21", "#FFE50A", "#1460D2", "#FF005D", "#00BBBB", "#BBBBBB",
+                   "#555555", "#F40E17", "#3BD01D", "#EDC809", "#5555FF", "#FF55FF", "#6AE3FA", "#FFFFFF"] } },
+    { "name": "synthwave", "title": "Synthwave '84", "desc": "Retro neon on purple",
+      "palette": { "bg": "#262335", "fg": "#F0EFF1",
+        "colors": ["#34294F", "#FE4450", "#72F1B8", "#FEDE5D", "#03EDF9", "#FF7EDB", "#03EDF9", "#F0EFF1",
+                   "#614D85", "#FE4450", "#72F1B8", "#F97E72", "#03EDF9", "#FF7EDB", "#03EDF9", "#FFFFFF"] } },
+    { "name": "hacker", "title": "Hacker Green", "desc": "Green phosphor screen",
+      "palette": { "bg": "#0A0F0A", "fg": "#33FF66",
+        "colors": ["#0D140D", "#E05555", "#33FF66", "#B8FF66", "#22BB55", "#66FFAA", "#55FFCC", "#99FF99",
+                   "#2A4A2A", "#FF6B6B", "#66FF88", "#D4FF88", "#44DD77", "#88FFBB", "#88FFDD", "#CCFFCC"] } },
+
+    { "name": "latte", "title": "Catppuccin Latte", "desc": "Light: soft pastels on cream",
+      "palette": { "bg": "#EFF1F5", "fg": "#4C4F69",
+        "colors": ["#5C5F77", "#D20F39", "#40A02B", "#DF8E1D", "#1E66F5", "#EA76CB", "#179299", "#ACB0BE",
+                   "#6C6F85", "#D20F39", "#40A02B", "#C57B0E", "#1E66F5", "#EA76CB", "#179299", "#BCC0CC"] } },
+    { "name": "githublight", "title": "GitHub Light", "desc": "Light: GitHub's light mode",
+      "palette": { "bg": "#FFFFFF", "fg": "#1F2328",
+        "colors": ["#24292F", "#CF222E", "#116329", "#4D2D00", "#0969DA", "#8250DF", "#1B7C83", "#6E7781",
+                   "#57606A", "#A40E26", "#1A7F37", "#633C01", "#218BFF", "#A475F9", "#3192AA", "#8C959F"] } }
+  ],
+
+  "prompts": [
+    { "name": "linuxify", "title": "Linuxify",        "desc": "user@host:~/path (main) $" },
+    { "name": "debian",   "title": "Ubuntu / Debian", "desc": "user@host:~/path$" },
+    { "name": "bracket",  "title": "Fedora / Arch",   "desc": "[user@host dir]$" },
+    { "name": "kali",     "title": "Kali",            "desc": "two lines: ┌──(user㉿host)-[~]" },
+    { "name": "parrot",   "title": "Parrot OS",       "desc": "two lines: ┌─[user@host]─[~]" },
+    { "name": "arrow",    "title": "oh-my-zsh",       "desc": "➜  dir git:(main)" },
+    { "name": "fish",     "title": "fish",            "desc": "user@host ~/D/github>" },
+    { "name": "pure",     "title": "Pure",            "desc": "two lines: path and branch, then ❯" },
+    { "name": "minimal",  "title": "Minimal",         "desc": "dir ❯" },
+    { "name": "macos",    "title": "macOS",           "desc": "user@host dir %" }
+  ],
+
+  "logos": [
+    { "name": "windows",     "title": "Windows (default)", "id": "" },
+    { "name": "windows11s",  "title": "Windows 11 small",  "id": "Windows 11_small" },
+    { "name": "windows10",   "title": "Windows 10",        "id": "Windows 10" },
+    { "name": "windows7",    "title": "Windows 7",         "id": "Windows 7" },
+    { "name": "windows95",   "title": "Windows 95",        "id": "Windows 95" },
+    { "name": "tux",         "title": "Linux (Tux)",       "id": "Linux" },
+    { "name": "ubuntu",      "title": "Ubuntu",            "id": "ubuntu" },
+    { "name": "fedora",      "title": "Fedora",            "id": "Fedora" },
+    { "name": "debian",      "title": "Debian",            "id": "Debian" },
+    { "name": "arch",        "title": "Arch",              "id": "arch" },
+    { "name": "kali",        "title": "Kali",              "id": "Kali" },
+    { "name": "mint",        "title": "Linux Mint",        "id": "linuxmint" },
+    { "name": "manjaro",     "title": "Manjaro",           "id": "manjaro" },
+    { "name": "popos",       "title": "Pop!_OS",           "id": "pop" },
+    { "name": "endeavouros", "title": "EndeavourOS",       "id": "EndeavourOS" },
+    { "name": "cachyos",     "title": "CachyOS",           "id": "CachyOS" },
+    { "name": "garuda",      "title": "Garuda",            "id": "Garuda" },
+    { "name": "opensuse",    "title": "openSUSE",          "id": "opensuse-tumbleweed" },
+    { "name": "gentoo",      "title": "Gentoo",            "id": "Gentoo" },
+    { "name": "nixos",       "title": "NixOS",             "id": "NixOS" },
+    { "name": "void",        "title": "Void",              "id": "void" },
+    { "name": "alpine",      "title": "Alpine",            "id": "Alpine" },
+    { "name": "zorin",       "title": "Zorin",             "id": "Zorin" },
+    { "name": "elementary",  "title": "elementary OS",     "id": "Elementary" },
+    { "name": "parrot",      "title": "Parrot OS",         "id": "Parrot" },
+    { "name": "raspbian",    "title": "Raspberry Pi OS",   "id": "raspbian" },
+    { "name": "steamos",     "title": "SteamOS",           "id": "SteamOS" },
+    { "name": "macos",       "title": "macOS",             "id": "macOS" },
+    { "name": "freebsd",     "title": "FreeBSD",           "id": "Freebsd" },
+    { "name": "android",     "title": "Android",           "id": "android" },
+    { "name": "templeos",    "title": "TempleOS",          "id": "TempleOS" },
+    { "name": "none",        "title": "No logo",           "id": "none" }
   ]
 }

@@ -12,11 +12,14 @@ if os.isdir(links) and not (";" .. envpath:lower() .. ";"):find(";" .. links:low
     os.setenv("PATH", envpath .. ";" .. links)
 end
 
+-- Ctrl+F accepts the grey suggestion (Right arrow and End still work too)
+rl.setbinding([["\C-f"]], "clink-insert-suggested-line", "emacs")
+
 local ESC = "\x1b"
 local R = ESC .. "[0m"
 
 local function read_config()
-    local cfg = { theme = "linuxify", fetch = "on", icons = "off", style = "linuxify", logo = "", palette = "" }
+    local cfg = { colors = "default", prompt = "linuxify", fetch = "on", icons = "off", logo_id = "", palette = "" }
     local raw = ""
     local f = io.open(cfgpath, "rb")
     if f then
@@ -27,6 +30,7 @@ local function read_config()
             if k then cfg[k] = v end
         end
     end
+    if cfg.style and not raw:find("\nprompt=") and not raw:find("^prompt=") then cfg.prompt = cfg.style end
     return cfg, raw
 end
 
@@ -39,6 +43,12 @@ local function set_aliases(cfg)
     os.setalias("lt", base .. " --tree --level=2 $*")
     os.setalias("theme", ps .. " theme $*")
     os.setalias("linuxify", ps .. " $*")
+    -- fastfetch uses the chosen logo (a --logo you type yourself comes later and wins)
+    if cfg.logo_id ~= "" then
+        os.setalias("fastfetch", 'fastfetch.exe --logo "' .. cfg.logo_id .. '" $*')
+    else
+        os.setalias("fastfetch", "fastfetch.exe $*")
+    end
 end
 
 local cfg, cfgraw = read_config()
@@ -69,8 +79,8 @@ clink.onbeginedit(function()
         end
         if cfg.fetch == "on" and not in_vscode() and not os.getenv("LINUXIFY_FETCHED") then
             os.setenv("LINUXIFY_FETCHED", "1")
-            if cfg.logo ~= "" then
-                os.execute("fastfetch --logo " .. cfg.logo .. " 2>nul")
+            if cfg.logo_id ~= "" then
+                os.execute('fastfetch --logo "' .. cfg.logo_id .. '" 2>nul')
             else
                 os.execute("fastfetch 2>nul")
             end
@@ -111,11 +121,13 @@ local function git_branch()
     end
 end
 
-local function cwd(leaf)
+-- Current directory as ~/linux/style/path, just its last part ("leaf"),
+-- or fish-style with parent folders shortened to one letter ("short").
+local function cwd(mode)
     local dir = os.getcwd()
     local userhome = (os.getenv("USERPROFILE") or ""):gsub("\\$", "")
     if dir:lower() == userhome:lower() then return "~" end
-    if leaf then
+    if mode == "leaf" then
         local name = path.getname(dir)
         if name == "" then return (dir:gsub("\\$", "")) end
         return name
@@ -123,7 +135,18 @@ local function cwd(leaf)
     if dir:lower():sub(1, #userhome + 1) == userhome:lower() .. "\\" then
         dir = "~" .. dir:sub(#userhome + 1)
     end
-    return (dir:gsub("\\", "/"))
+    dir = dir:gsub("\\$", ""):gsub("\\", "/")
+    if mode == "short" then
+        local parts = {}
+        for part in dir:gmatch("[^/]+") do table.insert(parts, part) end
+        for i = 1, #parts - 1 do
+            if #parts[i] > 1 and not parts[i]:match(":$") then
+                parts[i] = parts[i]:sub(1, parts[i]:sub(1, 1) == "." and 2 or 1)
+            end
+        end
+        dir = table.concat(parts, "/")
+    end
+    return dir
 end
 
 local lx_prompt = clink.promptfilter(5)
@@ -131,21 +154,39 @@ function lx_prompt:filter()
     local ok = os.geterrorlevel() == 0
     local user = os.getenv("USERNAME") or "user"
     local hostname = (os.getenv("COMPUTERNAME") or "windows"):lower()
-    local style = cfg.style
+    local style = cfg.prompt
 
     if style == "debian" then
         return ESC.."[1;32m"..user.."@"..hostname..R..":"..ESC.."[1;34m"..cwd()..R.."$ ", false
     elseif style == "bracket" then
-        return "["..user.."@"..hostname.." "..cwd(true).."]$ ", false
+        return "["..user.."@"..hostname.." "..cwd("leaf").."]$ ", false
     elseif style == "kali" then
         local g, b, w = ESC.."[32m", ESC.."[1;34m", ESC.."[1;37m"
         return g.."┌──("..b..user.."㉿"..hostname..R..g..")-["..w..cwd()..R..g.."]"..R.."\n"..g.."└─"..b.."$"..R.." ", false
+    elseif style == "parrot" then
+        local red = ESC.."[0;31m"
+        local x = ok and "" or "["..ESC.."[1;93m✗"..red.."]─"
+        return red.."┌─"..x.."["..R..user..ESC.."[1;33m@"..ESC.."[1;96m"..hostname..red.."]─["..ESC.."[0;32m"..cwd()..red.."]"..R
+            .."\n"..red.."└──╼ "..ESC.."[1;33m$"..R.." ", false
     elseif style == "arrow" then
         local c = ok and ESC.."[1;32m" or ESC.."[1;31m"
-        local s = c.."➜  "..ESC.."[36m"..cwd(true)..R
+        local s = c.."➜  "..ESC.."[36m"..cwd("leaf")..R
         local branch = git_branch()
         if branch then s = s.." "..ESC.."[1;34mgit:("..ESC.."[31m"..branch..ESC.."[1;34m)"..R end
         return s.." ", false
+    elseif style == "fish" then
+        return ESC.."[32m"..user..R.."@"..hostname.." "..ESC.."[32m"..cwd("short")..R.."> ", false
+    elseif style == "pure" then
+        local s = ESC.."[34m"..cwd()..R
+        local branch = git_branch()
+        if branch then s = s.." "..ESC.."[90m"..branch..R end
+        local c = ok and ESC.."[35m" or ESC.."[31m"
+        return s.."\n"..c.."❯"..R.." ", false
+    elseif style == "minimal" then
+        local c = ok and ESC.."[32m" or ESC.."[31m"
+        return ESC.."[1;36m"..cwd("leaf")..R.." "..c.."❯"..R.." ", false
+    elseif style == "macos" then
+        return user.."@"..hostname.." "..cwd("leaf").." % ", false
     else
         local s = ESC.."[92m"..user.."@"..hostname..R..":"..ESC.."[94m"..cwd()..R
         local branch = git_branch()
