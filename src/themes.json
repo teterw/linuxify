@@ -1,0 +1,120 @@
+{
+  "themes": [
+    {
+      "name": "linuxify",
+      "title": "Linuxify",
+      "desc": "Keeps your terminal's own colors, user@host:~/path $ prompt with git branch",
+      "style": "linuxify",
+      "logo": "",
+      "palette": null
+    },
+    {
+      "name": "ubuntu",
+      "title": "Ubuntu",
+      "desc": "Aubergine background and Yaru colors, classic bash prompt",
+      "style": "debian",
+      "logo": "ubuntu",
+      "palette": {
+        "bg": "#300A24", "fg": "#FFFFFF",
+        "colors": ["#171421", "#C01C28", "#26A269", "#A2734C", "#12488B", "#A347BA", "#2AA1B3", "#D0CFCC",
+                   "#5E5C64", "#F66151", "#33DA7A", "#E9AD0C", "#2A7BDE", "#C061CB", "#33C7DE", "#FFFFFF"]
+      }
+    },
+    {
+      "name": "fedora",
+      "title": "Fedora",
+      "desc": "GNOME dark terminal colors, [user@host dir]$ prompt",
+      "style": "bracket",
+      "logo": "fedora",
+      "palette": {
+        "bg": "#1E1E1E", "fg": "#FFFFFF",
+        "colors": ["#241F31", "#C01C28", "#2EC27E", "#F5C211", "#1E78E4", "#9841BB", "#0AB9DC", "#C0BFBC",
+                   "#5E5C64", "#ED333B", "#57E389", "#F8E45C", "#51A1FF", "#C061CB", "#4FD2FD", "#F6F5F4"]
+      }
+    },
+    {
+      "name": "kali",
+      "title": "Kali",
+      "desc": "Dark blue-grey background, two-line zsh prompt",
+      "style": "kali",
+      "logo": "kali",
+      "palette": {
+        "bg": "#1F2229", "fg": "#EDEDED",
+        "colors": ["#1F2229", "#E0115F", "#23D18B", "#E5C07B", "#277FFF", "#B048FF", "#15C6D9", "#D0D0D0",
+                   "#5C6370", "#FF4F7B", "#47F0AC", "#FFD866", "#5FA7FF", "#D08CFF", "#56E3F0", "#FFFFFF"]
+      }
+    },
+    {
+      "name": "arch",
+      "title": "Arch",
+      "desc": "Near-black background with Arch blue, [user@host dir]$ prompt",
+      "style": "bracket",
+      "logo": "arch",
+      "palette": {
+        "bg": "#121212", "fg": "#D8D8D8",
+        "colors": ["#1C1C1C", "#D54E53", "#9DC45F", "#E7C547", "#1793D1", "#B77EE0", "#54CED6", "#D8D8D8",
+                   "#555555", "#FF6B6B", "#B9E07A", "#FFE171", "#4FB8F0", "#D2A6FF", "#7FE6ED", "#FFFFFF"]
+      }
+    },
+    {
+      "name": "dracula",
+      "title": "Dracula",
+      "desc": "Purple-grey dark theme, oh-my-zsh arrow prompt",
+      "style": "arrow",
+      "logo": "",
+      "palette": {
+        "bg": "#282A36", "fg": "#F8F8F2",
+        "colors": ["#21222C", "#FF5555", "#50FA7B", "#F1FA8C", "#BD93F9", "#FF79C6", "#8BE9FD", "#F8F8F2",
+                   "#6272A4", "#FF6E6E", "#69FF94", "#FFFFA5", "#D6ACFF", "#FF92DF", "#A4FFFF", "#FFFFFF"]
+      }
+    },
+    {
+      "name": "nord",
+      "title": "Nord",
+      "desc": "Cool arctic blues",
+      "style": "linuxify",
+      "logo": "",
+      "palette": {
+        "bg": "#2E3440", "fg": "#D8DEE9",
+        "colors": ["#3B4252", "#BF616A", "#A3BE8C", "#EBCB8B", "#81A1C1", "#B48EAD", "#88C0D0", "#E5E9F0",
+                   "#4C566A", "#BF616A", "#A3BE8C", "#EBCB8B", "#81A1C1", "#B48EAD", "#8FBCBB", "#ECEFF4"]
+      }
+    },
+    {
+      "name": "gruvbox",
+      "title": "Gruvbox",
+      "desc": "Warm retro colors, oh-my-zsh arrow prompt",
+      "style": "arrow",
+      "logo": "",
+      "palette": {
+        "bg": "#282828", "fg": "#EBDBB2",
+        "colors": ["#282828", "#CC241D", "#98971A", "#D79921", "#458588", "#B16286", "#689D6A", "#A89984",
+                   "#928374", "#FB4934", "#B8BB26", "#FABD2F", "#83A598", "#D3869B", "#8EC07C", "#EBDBB2"]
+      }
+    },
+    {
+      "name": "catppuccin",
+      "title": "Catppuccin Mocha",
+      "desc": "Soft pastel dark theme",
+      "style": "linuxify",
+      "logo": "",
+      "palette": {
+        "bg": "#1E1E2E", "fg": "#CDD6F4",
+        "colors": ["#45475A", "#F38BA8", "#A6E3A1", "#F9E2AF", "#89B4FA", "#F5C2E7", "#94E2D5", "#BAC2DE",
+                   "#585B70", "#F38BA8", "#A6E3A1", "#F9E2AF", "#89B4FA", "#F5C2E7", "#94E2D5", "#A6ADC8"]
+      }
+    },
+    {
+      "name": "tokyonight",
+      "title": "Tokyo Night",
+      "desc": "Deep blue night theme, oh-my-zsh arrow prompt",
+      "style": "arrow",
+      "logo": "",
+      "palette": {
+        "bg": "#1A1B26", "fg": "#C0CAF5",
+        "colors": ["#15161E", "#F7768E", "#9ECE6A", "#E0AF68", "#7AA2F7", "#BB9AF7", "#7DCFFF", "#A9B1D6",
+                   "#414868", "#F7768E", "#9ECE6A", "#E0AF68", "#7AA2F7", "#BB9AF7", "#7DCFFF", "#C0CAF5"]
+      }
+    }
+  ]
+}
