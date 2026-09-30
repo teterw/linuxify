@@ -54,6 +54,197 @@ end
 local cfg, cfgraw = read_config()
 set_aliases(cfg)
 
+--------------------------------------------------------------------------------
+-- Linux commands and shell habits for cmd: cd -, .., mkcd, pwd, export, which,
+-- open, mkdir -p, sudo, plus grep/head/tail/wc/touch/df/free/uptime/rm/killall
+-- (run by lx.ps1). Each command in the typed line, split at |, &, && and ||,
+-- is rewritten before cmd runs it.
+
+local lx = 'powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File "' .. home .. '\\lx.ps1"'
+local helper_cmds = { touch = true, head = true, tail = true, grep = true, wc = true, df = true,
+                      free = true, uptime = true, rm = true, killall = true }
+local builtins = { dir = true, del = true, erase = true, copy = true, move = true, ren = true, rename = true,
+                   md = true, mkdir = true, rd = true, rmdir = true, type = true, echo = true, set = true,
+                   cd = true, chdir = true, mklink = true, start = true, cls = true, ver = true, vol = true,
+                   assoc = true, ftype = true, path = true, pushd = true, popd = true, title = true,
+                   color = true, date = true, time = true, ["for"] = true, ["if"] = true, call = true }
+
+-- Real GNU tools on PATH (Git, MSYS2...) win over linuxify's versions
+local path_cache = {}
+local function on_path(name)
+    if path_cache[name] == nil then
+        path_cache[name] = false
+        for dir in (os.getenv("PATH") or ""):gmatch("[^;]+") do
+            for _, ext in ipairs({ ".exe", ".cmd", ".bat" }) do
+                if os.isfile(dir .. "\\" .. name .. ext) then path_cache[name] = true; return true end
+            end
+        end
+    end
+    return path_cache[name]
+end
+
+-- Windows 11 sudo mode: 0 off, 1 new window, 2 input closed, 3 inline
+local sudo_mode
+local function get_sudo_mode()
+    if sudo_mode == nil then
+        sudo_mode = 0
+        if os.isfile((os.getenv("windir") or "C:\\Windows") .. "\\System32\\sudo.exe") then
+            local p = io.popen('reg query "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Sudo" /v Enabled 2>nul')
+            if p then
+                local out = p:read("*a") or ""
+                p:close()
+                sudo_mode = tonumber(out:match("Enabled%s+REG_DWORD%s+0x(%x+)") or "0", 16) or 0
+            end
+        end
+    end
+    return sudo_mode
+end
+
+-- "a b" c  ->  { 'a b', 'c' }
+local function split_args(s)
+    local args, cur, inq, has = {}, "", false, false
+    for ch in s:gmatch(".") do
+        if ch == '"' then
+            inq = not inq; has = true
+        elseif ch:match("%s") and not inq then
+            if has or cur ~= "" then table.insert(args, cur) end
+            cur, has = "", false
+        else
+            cur = cur .. ch
+        end
+    end
+    if has or cur ~= "" then table.insert(args, cur) end
+    return args
+end
+
+-- Splits a line at unquoted & | && || ( ), keeping the separators so it can be put back together.
+local function split_line(line)
+    local parts, cur, inq, i = {}, "", false, 1
+    while i <= #line do
+        local ch = line:sub(i, i)
+        if ch == '"' then
+            inq = not inq; cur = cur .. ch
+        elseif ch == "^" and not inq then
+            cur = cur .. line:sub(i, i + 1); i = i + 1
+        elseif not inq and (ch == "&" or ch == "|" or ch == "(" or ch == ")") then
+            local sep = ch
+            if (ch == "&" or ch == "|") and line:sub(i + 1, i + 1) == ch then sep = ch .. ch; i = i + 1 end
+            table.insert(parts, cur); table.insert(parts, sep); cur = ""
+        else
+            cur = cur .. ch
+        end
+        i = i + 1
+    end
+    table.insert(parts, cur)
+    return parts
+end
+
+local last_dir, prev_dir
+
+local rewrite
+local function rewrite_command(w, rest, args)
+    if w == "cd" or w == "chdir" then
+        if args == "" then return 'cd /d "%USERPROFILE%"' end
+        if args == "-" then
+            if not prev_dir then return "echo cd: OLDPWD not set" end
+            return 'cd /d "' .. prev_dir .. '" && echo ' .. prev_dir
+        end
+        if args:sub(1, 1) == "/" then return nil end
+        if args:sub(1, 1) == "~" then return 'cd /d "%USERPROFILE%' .. args:sub(2):gsub('"', ""):gsub("/", "\\") .. '"' end
+        return "cd /d " .. args
+    end
+    if w:match("^%.%.+$") and args == "" then
+        return "cd " .. ("..\\"):rep(#w - 1):sub(1, -2)
+    end
+    if w == "mkcd" then
+        local a = split_args(args)
+        if #a ~= 1 then return "echo usage: mkcd DIR" end
+        local d = a[1]:gsub("/", "\\")
+        return '(if not exist "' .. d .. '\\" mkdir "' .. d .. '") && cd /d "' .. d .. '"'
+    end
+    if w == "pwd" and args == "" then return "cd" end
+    if (w == "export" or w == "env") and args == "" then return "set" end
+    if w == "export" or w == "unset" then
+        local cmds = {}
+        for _, a in ipairs(split_args(args)) do
+            if w == "unset" then
+                table.insert(cmds, 'set "' .. a .. '="')
+            else
+                local name, value = a:match("^([%w_]+)=(.*)$")
+                if name then table.insert(cmds, 'set "' .. name .. "=" .. value .. '"') end
+            end
+        end
+        if #cmds == 0 then return nil end
+        return table.concat(cmds, " & ")
+    end
+    if w == "which" and not on_path("which") then
+        local names = {}
+        for _, a in ipairs(split_args(args)) do
+            if a:sub(1, 1) ~= "-" then table.insert(names, a) end
+        end
+        return "where " .. table.concat(names, " ")
+    end
+    if (w == "open" or w == "xdg-open") and args ~= "" then
+        local cmds = {}
+        for _, a in ipairs(split_args(args)) do table.insert(cmds, 'start "" "' .. a .. '"') end
+        return table.concat(cmds, " & ")
+    end
+    if w == "mkdir" or w == "md" then
+        for _, a in ipairs(split_args(args)) do
+            if a:sub(1, 1) == "-" or a:find("/", 1, true) then return lx .. " mkdir" .. rest end
+        end
+        return nil
+    end
+    if w == "sudo" and args ~= "" then
+        local mode = get_sudo_mode()
+        local inner = rewrite(args)
+        if mode == 0 then return lx .. " sudo " .. args end
+        local first = (inner:match("^%s*(%S+)") or ""):lower()
+        if mode == 1 then return "sudo cmd /k " .. inner end   -- new window: keep it open
+        if builtins[first] then return "sudo cmd /c " .. inner end
+        return "sudo " .. inner
+    end
+    if helper_cmds[w] and not on_path(w) then
+        return lx .. " " .. w .. rest
+    end
+    return nil
+end
+
+-- Rewrites one command (no separators); returns it unchanged if it isn't ours.
+rewrite = function(seg)
+    local lead, body, trail = seg:match("^(%s*)(.-)(%s*)$")
+    if body == "" then return seg end
+    local word, rest = body:match("^(%S+)(.*)$")
+    local out = rewrite_command(word:lower(), rest, rest:match("^%s*(.-)%s*$"))
+    if not out then return seg end
+    return lead .. out .. trail
+end
+
+-- Dry run for testing: LINUXIFY_REWRITE_TEST=<file of lines> writes what each line would become.
+local testfile = os.getenv("LINUXIFY_REWRITE_TEST")
+if testfile then
+    local src, out = io.open(testfile, "rb"), io.open(testfile .. ".out", "wb")
+    if src and out then
+        prev_dir = "C:\\previous\\dir"
+        for line in src:lines() do
+            local parts = split_line((line:gsub("\r$", "")))
+            for i = 1, #parts, 2 do parts[i] = rewrite(parts[i]) end
+            out:write(line:gsub("\r$", ""), "\n  => ", table.concat(parts), "\n")
+        end
+        src:close(); out:close()
+    end
+end
+
+clink.onfilterinput(function(line)
+    local parts = split_line(line)
+    local changed = false
+    for i = 1, #parts, 2 do
+        local new = rewrite(parts[i])
+        if new ~= parts[i] then parts[i] = new; changed = true end
+    end
+    if changed then return table.concat(parts) end
+end)
+
 local function in_vscode()
     return os.getenv("TERM_PROGRAM") == "vscode"
 end
@@ -65,6 +256,11 @@ end
 
 local started = false
 clink.onbeginedit(function()
+    -- remember the previous folder for `cd -`, however the folder changed
+    local here = os.getcwd()
+    if last_dir and here ~= last_dir then prev_dir = last_dir end
+    last_dir = here
+
     -- pick up changes made by `theme` / `linuxify` since the last prompt
     local newcfg, raw = read_config()
     if raw ~= cfgraw then

@@ -5,6 +5,8 @@ Make **cmd** and **PowerShell** on Windows feel like a Linux terminal, in one co
 - **Syntax colors while you type**: in cmd, commands turn green when they exist and red when they don't; in PowerShell, commands, flags, strings and variables each get their own color
 - **Suggestions from your history** in grey as you type. Press **Ctrl+F** (or →) to accept, and ↑/↓ to search history for what you've typed
 - **`ls` like Linux**: columns, folders in blue, programs in green, plus `ll`, `la` and `lt` (tree)
+- **Linux commands** that Windows lacks: `grep`, `head`, `tail -f`, `wc`, `which`, `touch`, `df -h`, `free -h`, `uptime`, `rm -rf`, `mkdir -p`, `export`, `killall`, `open`, `sudo`...
+- **Shell habits**: `cd -`, `..`, `...`, `mkcd`, `!!`, `sudo !!`
 - **`theme`**: one menu to pick your **colors** (24 themes), **prompt** (10 styles) and **fastfetch logo** (32 logos), each with a live preview
 - **fastfetch** system info when a terminal opens
 
@@ -70,6 +72,43 @@ In the pickers: ↑/↓ to move, type a letter to jump, Enter to choose, Esc to 
 
 Theme colors (background and palette) change live in **Windows Terminal**, the default terminal on Windows 11. In the old console window, you still get the prompts and syntax colors, just not the background.
 
+## Linux commands
+
+These work in both cmd and PowerShell, including in pipes (`git log | grep fix | head -5`):
+
+| Command | What it does |
+|---|---|
+| `grep [-ivnclLrwFoqs] PATTERN [FILE...]` | search text, matches highlighted; `-r` searches folders |
+| `head [-n N]` / `tail [-n N] [-f]` | first / last lines; `tail -f` follows a growing log |
+| `wc [-lwc]` | count lines, words, bytes |
+| `which NAME` | where a command lives |
+| `touch FILE` | create a file or update its timestamp |
+| `df -h` / `free -h` / `uptime [-p]` | disk space, memory, time since boot |
+| `rm -rf`, `mkdir -p` | Linux flags; `rm` refuses drive roots, your home and Windows folders |
+| `export A=1`, `unset A`, `env` | environment variables |
+| `killall NAME` | close a program by name (`-9` to force) |
+| `open` / `xdg-open` | open a file, folder or URL with its default app |
+| `sudo COMMAND` | run as administrator (see below) |
+| `pwd` | print the current folder |
+
+If you already have real GNU tools on your PATH (from Git or MSYS2, for example), those are used instead.
+
+In PowerShell, `rm`, `mkdir` and `pwd` only act like Linux when you type them. Scripts still get the normal PowerShell commands, and so does anything using PowerShell-style parameters like `rm -Recurse`.
+
+**sudo** uses the `sudo` built into Windows 11. By default Windows runs it in a new window. For Linux-style sudo, where the output appears right in your terminal, run `linuxify sudo inline` once (Windows will ask for permission). On older Windows, `sudo` opens an elevated window instead.
+
+## Shell habits
+
+| Type | To |
+|---|---|
+| `cd -` | go back to the previous folder |
+| `cd` | go to your home folder |
+| `..` `...` `....` | go up 1, 2 or 3 folders |
+| `mkcd DIR` | make a folder (and any parents) and go into it |
+| `!!` | repeat the last command, for example `sudo !!` |
+| `!$` | the last argument of the last command |
+| Ctrl+F or → | accept the grey suggestion |
+
 ## Commands
 
 | Command | What it does |
@@ -83,6 +122,7 @@ Theme colors (background and palette) change live in **Windows Terminal**, the d
 | `fastfetch` | system info with your chosen logo |
 | `linuxify fetch on\|off` | show fastfetch when a terminal opens |
 | `linuxify icons on\|off` | file icons in `ls` (needs a [Nerd Font](https://www.nerdfonts.com/)) |
+| `linuxify sudo [inline\|window\|off]` | how Windows' sudo runs commands |
 | `linuxify update` | update to the latest version |
 | `linuxify uninstall` | remove linuxify |
 
@@ -105,7 +145,7 @@ This removes the profile block, unhooks Clink, and puts back the Clink settings 
 ## Good to know
 
 - In PowerShell, `ls` now prints text like Linux instead of returning objects. For scripts and pipelines such as `Get-ChildItem | Where-Object ...`, use `gci` or `dir`, which are unchanged.
-- In cmd, `ls` is a doskey alias, so it works when typed but not inside `.bat` files or after a pipe.
+- In cmd, linuxify's commands work when typed (including in pipes), but not inside `.bat` files. The ones that run through PowerShell (`grep`, `head`, `tail`, `wc`, `touch`, `df`, `free`, `uptime`, `rm`, `killall`) take a moment to start.
 - PowerShell can't color unknown commands red while you type (PSReadLine doesn't support it), but it does turn the end of the prompt red on syntax errors. cmd does the red/green check through Clink.
 - fastfetch doesn't run in VS Code's terminal, in scripts, or in a shell started from another shell.
 - Upgrading from 1.0 keeps your colors and prompt. The logo resets to Windows, since logos are now their own setting.

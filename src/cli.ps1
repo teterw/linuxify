@@ -22,10 +22,17 @@ ${b}linuxify$r $($Linuxify.Version) - Linux-style cmd and PowerShell
   ${c}theme list$r              list every color theme, prompt and logo
   ${c}linuxify fetch$r on|off   show fastfetch when a terminal opens
   ${c}linuxify icons$r on|off   file icons in ls (needs a Nerd Font)
+  ${c}linuxify sudo$r [inline|window|off]   how Windows' sudo runs commands
   ${c}linuxify update$r         update to the latest version
   ${c}linuxify uninstall$r      remove linuxify
-  ${c}ls$r ${c}ll$r ${c}la$r ${c}lt$r             list / long / all / tree
-  ${c}Ctrl+F$r                  accept the grey suggestion while typing
+
+${b}Linux commands$r
+  ls ll la lt  which  touch  head  tail [-f]  grep  wc  df -h  free -h  uptime
+  open  xdg-open  mkdir -p  rm -rf  pwd  export  unset  env  killall  sudo
+
+${b}Shell habits$r
+  cd -   cd (home)   ..  ...  ....   mkcd DIR   !! (last command)   !`$ (last argument)
+  ${c}Ctrl+F$r accepts the grey suggestion while typing
 
 "@
 }
@@ -242,6 +249,24 @@ function Set-LxLogo([string]$name) {
     Write-Host "fastfetch logo: $($l.title)"
 }
 
+# Windows 11's built-in sudo: inline (like Linux), new window, or off. Changing it needs admin.
+function Set-LxSudo([string]$mode) {
+    $exe = Join-Path $env:windir 'System32\sudo.exe'
+    if (-not (Test-Path $exe)) {
+        Write-Host "This Windows version has no built-in sudo, so linuxify's sudo opens an elevated window instead."
+        return
+    }
+    $modes = @{ inline = 'normal'; on = 'normal'; window = 'forceNewWindow'; off = 'disable' }
+    if ($mode) {
+        if (-not $modes.ContainsKey($mode)) { Write-Host 'Usage: linuxify sudo [inline|window|off]' -ForegroundColor Red; return }
+        Write-Host 'Changing this needs administrator rights, so Windows will ask for permission.'
+        try { Start-Process $exe -ArgumentList 'config', '--enable', $modes[$mode] -Verb RunAs -Wait -WindowStyle Hidden }
+        catch { Write-Host 'Cancelled.'; return }
+    }
+    & $exe config
+    if (-not $mode) { Write-Host 'Change it with: linuxify sudo inline (like Linux) | window | off' }
+}
+
 function Set-Toggle($key, $value) {
     if ($value -notin 'on', 'off') { Write-Host "Usage: linuxify $key on|off" -ForegroundColor Red; return }
     Save-LxSetting $key $value
@@ -349,6 +374,7 @@ switch ($cmd) {
     'colors'  { Invoke-LxTheme (@('colors') + $rest) }
     'prompt'  { Invoke-LxTheme (@('prompt') + $rest) }
     'logo'    { Invoke-LxTheme (@('logo') + $rest) }
+    'sudo'    { Set-LxSudo $rest[0] }
     'fetch'   { Set-Toggle 'fetch' $rest[0] }
     'icons'   { Set-Toggle 'icons' $rest[0] }
     'update'  {

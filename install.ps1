@@ -169,6 +169,7 @@ if (Test-Path "$env:LOCALAPPDATA\linuxify\profile.ps1") { . "$env:LOCALAPPDATA\l
             'color.flag'         = 'bright cyan'
             'color.suggestion'   = 'bright black'
             'autosuggest.enable' = 'true'
+            'autosuggest.inline' = 'true'    # grey suggestion after the cursor (off by default since Clink 1.9)
             'cmd.get_errorlevel' = 'true'
             'clink.logo'         = 'none'
         }

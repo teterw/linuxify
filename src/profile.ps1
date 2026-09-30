@@ -30,6 +30,16 @@ if ($Host.Name -eq 'ConsoleHost' -and (Get-Module PSReadLine -ListAvailable)) {
     Set-PSReadLineKeyHandler -Key Tab       -Function MenuComplete
     # Ctrl+F accepts the grey history suggestion (Right arrow still works too)
     Set-PSReadLineKeyHandler -Chord Ctrl+f -Function $(if ($rl -ge [version]'2.2') { 'AcceptSuggestion' } else { 'ForwardChar' })
+    # !! and !$ turn into the last command / its last argument when you press Enter
+    Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
+        try {
+            $line = $null; $cursor = $null
+            [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+            $new = Expand-LxHistory $line
+            if ($new -ne $line) { [Microsoft.PowerShell.PSConsoleReadLine]::Replace(0, $line.Length, $new) }
+        } catch { }
+        [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+    }
     Remove-Variable e, rl, colors
 }
 
@@ -42,9 +52,15 @@ if (Get-Command eza -CommandType Application -ErrorAction SilentlyContinue) {
     function lt { eza @(Get-LxEzaArgs $Linuxify.Config) --tree --level=2 @args }
 }
 
+# --- Linux commands and shell habits: which, grep, rm -rf, cd -, .., mkcd ... ---
+foreach ($a in 'cd', 'pwd', 'rm') { Remove-Item "Alias:$a" -Force -ErrorAction SilentlyContinue }
+Remove-Variable a
+. (Join-Path $PSScriptRoot 'commands.ps1')
+
 # --- Prompt ---
 function prompt {
     $ok = $?
+    Update-LxDirHistory
     if ($Linuxify.PromptStyle -ne $Linuxify.Config.prompt) {
         # PSReadLine redraws the last characters of the prompt in red on a syntax error
         $Linuxify.PromptStyle = $Linuxify.Config.prompt
