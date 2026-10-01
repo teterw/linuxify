@@ -61,6 +61,7 @@ Remove-Variable a
 function prompt {
     $ok = $?
     Update-LxDirHistory
+    Update-LxPalette
     if ($Linuxify.PromptStyle -ne $Linuxify.Config.prompt) {
         # PSReadLine redraws the last characters of the prompt in red on a syntax error
         $Linuxify.PromptStyle = $Linuxify.Config.prompt
@@ -73,10 +74,29 @@ function prompt {
 
 # --- Commands ---
 function linuxify {
+    if ($args.Count -and $args[0] -in 'restart', 'reload') { Restart-Linuxify; return }
     & (Join-Path $Linuxify.Home 'cli.ps1') @args
     $Linuxify.Config = Read-LxConfig
 }
 function theme { linuxify theme @args }
+
+# `linuxify restart`: clears the screen and runs this profile again, like a new terminal would
+# (theme colors, fastfetch), so updates and theme changes show up without opening a new tab.
+function Restart-Linuxify {
+    $e = [char]27
+    [Console]::Write("$e[H$e[2J$e[3J")
+    if (Test-LxPaletteTerminal) { [Console]::Write((Get-LxPaletteReset)) }
+    $env:LINUXIFY_FETCHED = $null
+    . (Join-Path $Linuxify.Home 'profile.ps1')
+    # dot-sourcing inside a function only defines things in here, so hand them to the session
+    foreach ($f in Get-ChildItem function:) {
+        $file = $f.ScriptBlock.File
+        if ($file -and $file.StartsWith($Linuxify.Home, [StringComparison]::OrdinalIgnoreCase)) {
+            Set-Item -LiteralPath "function:global:$($f.Name)" $f.ScriptBlock
+        }
+    }
+    foreach ($v in Get-Variable -Scope 0) { if ($v.Name -match '^(Linuxify|Lx)') { Set-Variable -Scope Global $v.Name $v.Value } }
+}
 
 # fastfetch uses your chosen logo unless you pass one yourself
 if (Get-Command fastfetch -CommandType Application -ErrorAction SilentlyContinue) {
@@ -93,6 +113,8 @@ if ($Host.Name -eq 'ConsoleHost' -and -not [Console]::IsOutputRedirected -and -n
     if ($Linuxify.Config.palette -and (Test-LxPaletteTerminal)) {
         [Console]::Write($Linuxify.Config.palette)
     }
+    # so the prompt can put the colors back after Windows Terminal reloads its settings
+    if ($env:WT_SESSION -and (Test-LxPaletteTerminal)) { $Linuxify.TermFiles = Get-LxTermFiles; $Linuxify.PaletteAt = [DateTime]::UtcNow.Ticks }
     if ($Linuxify.Config.fetch -eq 'on' -and -not $env:LINUXIFY_FETCHED -and $env:TERM_PROGRAM -ne 'vscode' -and
         (Get-Command fastfetch -CommandType Application -ErrorAction SilentlyContinue)) {
         $env:LINUXIFY_FETCHED = '1'

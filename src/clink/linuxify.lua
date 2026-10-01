@@ -235,7 +235,19 @@ if testfile then
     end
 end
 
+-- `linuxify restart`: reload these scripts, then start up again like a new terminal (see onbeginedit)
+local function is_restart(line)
+    local a, b = line:match("^%s*(%S+)%s+(%S+)%s*$")
+    if not a or a:lower() ~= "linuxify" then return false end
+    b = b:lower()
+    return b == "restart" or b == "reload"
+end
+
 clink.onfilterinput(function(line)
+    if is_restart(line) then
+        clink.reload()
+        return 'set "LINUXIFY_FETCHED=" & cls'
+    end
     local parts = split_line(line)
     local changed = false
     for i = 1, #parts, 2 do
@@ -254,6 +266,36 @@ local function palette_terminal()
         and not in_vscode()
 end
 
+-- Windows Terminal resets colors set by escape codes whenever it reloads settings.json (after a
+-- window option, or a change in its own Settings page). Each prompt checks, and while the file
+-- changed shortly before the theme was last applied, applies it again.
+local term_files = {}
+if os.getenv("WT_SESSION") then
+    local la = os.getenv("LOCALAPPDATA") or ""
+    for _, p in ipairs({ "Microsoft.WindowsTerminal_8wekyb3d8bbwe", "Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe",
+                         "Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe" }) do
+        local f = la .. "\\Packages\\" .. p .. "\\LocalState\\settings.json"
+        if os.isfile(f) then table.insert(term_files, f) end
+    end
+    local f = la .. "\\Microsoft\\Windows Terminal\\settings.json"
+    if os.isfile(f) then table.insert(term_files, f) end
+end
+local palette_at = 0
+
+local function update_palette()
+    if cfg.palette == "" or #term_files == 0 or not palette_terminal() then return end
+    local newest = 0
+    for _, f in ipairs(term_files) do
+        local t = os.globfiles(f, 2)
+        if t and t[1] and t[1].mtime and t[1].mtime > newest then newest = t[1].mtime end
+    end
+    -- file times may be whole seconds, so allow two
+    if newest > palette_at - 2 then
+        clink.print(cfg.palette, NONL)
+        palette_at = os.time()
+    end
+end
+
 local started = false
 clink.onbeginedit(function()
     -- remember the previous folder for `cd -`, however the folder changed
@@ -270,8 +312,10 @@ clink.onbeginedit(function()
 
     if not started then
         started = true
-        if cfg.palette ~= "" and palette_terminal() then
-            clink.print(cfg.palette, NONL)
+        if palette_terminal() then
+            -- reset first, in case `linuxify restart` switched back to the terminal's own colors
+            clink.print(ESC.."]104"..ESC.."\\"..ESC.."]110"..ESC.."\\"..ESC.."]111"..ESC.."\\"..ESC.."]112"..ESC.."\\"..cfg.palette, NONL)
+            palette_at = os.time()
         end
         if cfg.fetch == "on" and not in_vscode() and not os.getenv("LINUXIFY_FETCHED") then
             os.setenv("LINUXIFY_FETCHED", "1")
@@ -281,6 +325,8 @@ clink.onbeginedit(function()
                 os.execute("fastfetch 2>nul")
             end
         end
+    else
+        update_palette()
     end
 end)
 

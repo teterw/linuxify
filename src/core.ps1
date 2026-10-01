@@ -4,7 +4,7 @@
 
 $Linuxify = @{
     Home    = $PSScriptRoot
-    Version = '1.2.0'
+    Version = '1.3.0'
     Repo    = 'teterw/linuxify'
 }
 
@@ -96,6 +96,30 @@ function Get-LxPaletteReset {
 # Resets then applies a color theme in the current terminal tab.
 function Set-LxPalette($color) {
     if (Test-LxPaletteTerminal) { [Console]::Write((Get-LxPaletteReset) + (Get-LxPaletteSeq $color)) }
+}
+
+# The settings.json of each Windows Terminal that's installed (Store, Preview, Canary, or unpackaged)
+function Get-LxTermFiles {
+    $files = if ($env:LINUXIFY_WT_SETTINGS) { @($env:LINUXIFY_WT_SETTINGS) } else {
+        $pkgs = Join-Path $env:LOCALAPPDATA 'Packages'
+        @(foreach ($p in 'Microsoft.WindowsTerminal_8wekyb3d8bbwe', 'Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe',
+                         'Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe') { Join-Path $pkgs "$p\LocalState\settings.json" }) +
+            (Join-Path $env:LOCALAPPDATA 'Microsoft\Windows Terminal\settings.json')
+    }
+    @($files | Where-Object { Test-Path -LiteralPath $_ })
+}
+
+# Windows Terminal resets colors set by escape codes whenever it reloads settings.json (after a
+# window option, or a change in its own Settings page). Run at each prompt: while settings.json
+# changed less than a second before the theme was last applied, apply it again.
+function Update-LxPalette {
+    if (-not $Linuxify.TermFiles -or -not $Linuxify.Config.palette) { return }
+    $changed = 0
+    foreach ($f in $Linuxify.TermFiles) { $t = [IO.File]::GetLastWriteTimeUtc($f).Ticks; if ($t -gt $changed) { $changed = $t } }
+    if ($changed -gt $Linuxify.PaletteAt - [TimeSpan]::TicksPerSecond) {
+        [Console]::Write($Linuxify.Config.palette)
+        $Linuxify.PaletteAt = [DateTime]::UtcNow.Ticks
+    }
 }
 
 # --- fastfetch ---

@@ -8,6 +8,8 @@ Make **cmd** and **PowerShell** on Windows feel like a Linux terminal, in one co
 - **Linux commands** that Windows lacks: `grep`, `head`, `tail -f`, `wc`, `which`, `touch`, `df -h`, `free -h`, `uptime`, `rm -rf`, `mkdir -p`, `export`, `killall`, `open`, `sudo`...
 - **Shell habits**: `cd -`, `..`, `...`, `mkcd`, `!!`, `sudo !!`
 - **`theme`**: one menu to pick your **colors** (24 themes), **prompt** (10 styles) and **fastfetch logo** (32 logos), each with a live preview
+- **Window options** for Windows Terminal: background **transparency**, **blur**, **font**, **font size**, **cursor shape** and a **retro CRT** effect
+- **`linuxify restart`**: reload in place, like opening a new terminal
 - **fastfetch** system info when a terminal opens
 
 ![Fedora colors with the Fedora logo](docs/fedora.png)
@@ -72,6 +74,25 @@ In the pickers: ↑/↓ to move, type a letter to jump, Enter to choose, Esc to 
 
 Theme colors (background and palette) change live in **Windows Terminal**, the default terminal on Windows 11. In the old console window, you still get the prompts and syntax colors, just not the background.
 
+### Window: transparency, blur, font, cursor
+
+Pick **Window** in the `theme` menu (or run `theme window`) for Windows Terminal's look. Changes show up right away in every tab, and the pickers preview them live as you move.
+
+| Option | Command | |
+|---|---|---|
+| Transparency | `theme transparency 20` | see-through background, 0–90% |
+| Blur | `theme blur on` | frosted glass behind a transparent background |
+| Font | `theme font` / `theme font "JetBrainsMono NF"` | lists your installed fixed-width fonts; `theme font default` resets |
+| Font size | `theme fontsize 13` | |
+| Cursor | `theme cursor block` | `bar` `block` `underscore` `box` `double` `vintage` |
+| Retro effect | `theme retro on` | old CRT monitor: scanlines and glow (try it with Hacker Green) |
+
+These are saved in Windows Terminal's own `settings.json`, under `profiles` → `defaults`, so they apply to cmd and PowerShell tabs alike. linuxify edits just those lines and leaves the rest of the file (and its formatting) alone. The first change makes a copy of the file next to it (`settings.json.linuxify-backup`), and `linuxify uninstall` puts your old values back. If one of your Windows Terminal profiles sets its own font or transparency, it keeps it, and linuxify tells you which.
+
+### linuxify restart
+
+`linuxify restart` (or `linuxify reload`) clears the screen and runs linuxify's startup again: your colors, your fastfetch logo, and any updated linuxify code. It's like opening a new terminal, without losing your tab.
+
 ## Linux commands
 
 These work in both cmd and PowerShell, including in pipes (`git log | grep fix | head -5`):
@@ -113,11 +134,14 @@ In PowerShell, `rm`, `mkdir` and `pwd` only act like Linux when you type them. S
 
 | Command | What it does |
 |---|---|
-| `theme` | menu: colors, prompt, fastfetch logo, fastfetch at startup, icons |
+| `theme` | menu: colors, prompt, fastfetch logo, window, fastfetch at startup, icons |
 | `theme colors` / `theme colors nord` | pick colors, or set them directly |
 | `theme prompt` / `theme prompt kali` | pick a prompt style, or set it directly |
 | `theme logo` / `theme logo arch` | pick the fastfetch logo, or set it directly |
-| `theme list` | list every color theme, prompt and logo |
+| `theme window` | Windows Terminal: transparency, blur, font, font size, cursor, retro effect |
+| `theme transparency 20` `theme blur on` `theme font` `theme fontsize 13` `theme cursor block` `theme retro on` | change one window option directly ([details](#window-transparency-blur-font-cursor)) |
+| `theme list` | list every color theme, prompt and logo, and your window options |
+| `linuxify restart` | reload linuxify in this tab, like opening a new terminal |
 | `ls` `ll` `la` `lt` | list / long list / include hidden / tree |
 | `fastfetch` | system info with your chosen logo |
 | `linuxify fetch on\|off` | show fastfetch when a terminal opens |
@@ -140,7 +164,7 @@ or, if the `linuxify` command is gone:
 irm https://raw.githubusercontent.com/teterw/linuxify/main/uninstall.ps1 | iex
 ```
 
-This removes the profile block, unhooks Clink, and puts back the Clink settings it changed. Clink, eza and fastfetch stay installed, and the uninstaller prints the `winget uninstall` commands if you want them gone too.
+This removes the profile block, unhooks Clink, and puts back the Clink and Windows Terminal settings it changed. Clink, eza and fastfetch stay installed, and the uninstaller prints the `winget uninstall` commands if you want them gone too.
 
 ## Good to know
 
@@ -148,6 +172,7 @@ This removes the profile block, unhooks Clink, and puts back the Clink settings 
 - In cmd, linuxify's commands work when typed (including in pipes), but not inside `.bat` files. The ones that run through PowerShell (`grep`, `head`, `tail`, `wc`, `touch`, `df`, `free`, `uptime`, `rm`, `killall`) take a moment to start.
 - PowerShell can't color unknown commands red while you type (PSReadLine doesn't support it), but it does turn the end of the prompt red on syntax errors. cmd does the red/green check through Clink.
 - fastfetch doesn't run in VS Code's terminal, in scripts, or in a shell started from another shell.
+- Windows Terminal resets theme colors whenever its settings change (from linuxify's window options or its own Settings page). linuxify puts them back at the next prompt in each tab.
 - Upgrading from 1.0 keeps your colors and prompt. The logo resets to Windows, since logos are now their own setting.
 
 ## Credits

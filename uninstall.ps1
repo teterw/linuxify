@@ -49,6 +49,12 @@ function Uninstall-Linuxify {
         Info 'unhooked cmd (Clink settings restored)'
     }
 
+    # Windows Terminal: put back the window settings linuxify changed (transparency, font...)
+    if (Test-Path "$dest\terminal.ps1") {
+        . "$dest\terminal.ps1"
+        if (Restore-LxTerminal) { Info 'restored your Windows Terminal settings' }
+    }
+
     # Reset colors in this terminal
     if ($env:WT_SESSION) { $e = [char]27; [Console]::Write("$e]104$e\$e]110$e\$e]111$e\$e]112$e\") }
 
